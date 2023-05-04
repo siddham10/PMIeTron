@@ -1,0 +1,119 @@
+{
+  "manifest": [
+    {
+      "filename": "090-base-model-uom.xlsx",
+      "sequence": 1,
+      "timeout": 600000
+    },
+    {
+      "filename": "050-base-model-reference-data.xlsx",
+      "sequence": 2,
+      "timeout": 600000
+    },
+    {
+      "filename": "Locale.xlsm",
+      "sequence": 3,
+      "timeout": 600000
+    },
+    {
+      "filename": "070-taxonomy-model.xlsx",
+      "sequence": 4,
+      "timeout": 600000
+    },
+    {
+      "filename": "010-base-model-thing.xlsx",
+      "sequence": 5,
+      "timeout": 600000
+    },
+    {
+      "filename": "020-base-model-digital-asset.xlsx",
+      "sequence": 6,
+      "timeout": 600000
+    },
+    {
+      "filename": "060-authorization-model.xlsx",
+      "sequence": 7,
+      "timeout": 600000
+    },
+    {
+      "filename": "110-workflow-model.xlsx",
+      "sequence": 8,
+      "timeout": 600000
+    },
+    {
+      "filename": "080-governance-model.xlsm",
+      "sequence": 9,
+      "timeout": 600000
+    },
+    {
+      "filename": "Information Object.xlsm",
+      "sequence": 10,
+      "timeout": 600000
+    },
+    {
+      "filename": "Reason for Unusable.xlsm",
+      "sequence": 11,
+      "timeout": 600000
+    },
+    {
+      "filename": "Status.xlsm",
+      "sequence": 12,
+      "timeout": 600000
+    },
+    {
+      "filename": "Taxonomy Active Data.xlsm",
+      "sequence": 13,
+      "timeout": 600000
+    },
+    {
+      "filename": "Usage Status.xlsm",
+      "sequence": 14,
+      "timeout": 600000
+    },
+    {
+      "filename": "Yes No.xlsm",
+      "sequence": 15,
+      "timeout": 600000
+    },
+    {
+      "filename": "PIM Status.xlsm",
+      "sequence": 16,
+      "timeout": 600000
+    },
+    {
+      "filename": "SalesItemStatusData.xlsm",
+      "sequence": 17,
+      "timeout": 600000
+    },
+    {
+      "filename": "Target Attribute.xlsm",
+      "sequence": 18,
+      "timeout": 600000
+    },
+    {
+      "filename": "Country Specific Reason Data.xlsm",
+      "sequence": 19,
+      "timeout": 600000
+    },
+    {
+      "filename": "Image used for.xlsm",
+      "sequence": 20,
+      "timeout": 600000
+    },
+    {
+      "filename": "Target Entity Type.xlsm",
+      "sequence": 21,
+      "timeout": 600000
+    },
+    {
+      "filename": "HFB for rollout.xlsm",
+      "sequence": 22,
+      "timeout": 600000
+    },
+    {
+      "filename": "applicationproperties.xlsm",
+      "sequence": 23,
+      "timeout": 600000
+    }
+  ]
+}
