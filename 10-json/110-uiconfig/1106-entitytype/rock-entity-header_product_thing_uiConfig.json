@@ -34,7 +34,7 @@
                   "PMI_globalArticleCode": {
                     "attributeName": "PMI_globalArticleCode",
                     "noTrim": true,
-                    "visible": true
+                    "visible": false
                   },
                   "PMI_globalArticleName": {
                     "attributeName": "PMI_globalArticleName",
