@@ -1,0 +1,67 @@
+{
+  "metaInfo": {
+    "dataIndex": "config",
+    "collectionName": "configObjects",
+    "responseObjectName": "response"
+  },
+  "configObjects": [
+    {
+      "id": "rock-entity-header_product_thing_uiConfig",
+      "name": "rock-entity-header_product_thing",
+      "type": "uiConfig",
+      "properties": {
+        "createdByService": "system",
+        "createdBy": "etronds.admin@riversand.com_user"
+      },
+      "data": {
+        "contexts": [
+          {
+            "context": {
+              "app": "_DEFAULT",
+              "channel": "_DEFAULT",
+              "component": "rock-entity-header",
+              "country": "_DEFAULT",
+              "domain": "thing",
+              "entityType": "PMI_product",
+              "relationship": "_DEFAULT",
+              "role": "_DEFAULT",
+              "tenant": "_DEFAULT",
+              "user": "_DEFAULT"
+            },
+            "jsonData": {
+              "config": {
+                "headerConfig": {
+                  "PMI_globalArticleCode": {
+                    "attributeName": "PMI_globalArticleCode",
+                    "noTrim": true,
+                    "visible": false
+                  },
+                  "PMI_globalArticleName": {
+                    "attributeName": "PMI_globalArticleName",
+                    "noTrim": true,
+                    "visible": true
+                  },
+                  "PMI_productCategory": {
+                    "attributeName": "PMI_productCategory",
+                    "noTrim": true,
+                    "visible": true
+                  },
+                  "PMI_productHierarchy": {
+                    "attributeName": "PMI_productHierarchy",
+                    "noTrim": true,
+                    "visible": true
+                  },
+                  "PMI_globalArticleStatus": {
+                    "attributeName": "PMI_globalArticleStatus",
+                    "noTrim": true,
+                    "visible": true
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
