@@ -1,0 +1,29 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema
+pool:
+  # https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md
+  vmImage: ubuntu-20.04
+
+trigger: none
+
+pr: none
+
+stages:
+  - stage: deployDevelopment
+    displayName: Deploy development
+    condition: |
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/main/')
+    variables:
+      - group: development
+    jobs:
+      - template: azure-devops/jobs/deploy.yml
+  - stage: testDevelopment
+    displayName: Test development
+    condition: |
+      and(
+        eq(dependencies.deployDevelopment.result, 'Succeeded'),
+        startsWith(variables['Build.SourceBranch'], 'refs/heads/main/')
+      )
+    variables:
+      - group: development
+    jobs:
+      - template: azure-devops/jobs/functional-test.yml

@@ -1,0 +1,35 @@
+jobs:
+  - job: test
+    displayName: Functional test
+    # Increase default of 60 minutes https://go.microsoft.com/fwlink/?linkid=2077134
+    timeoutInMinutes: 300
+    steps:
+      - script: mvn test $MAVEN_OPTIONS
+        env:
+          ADMIN_PASSWORD: $(admin-password)
+          ADMIN_USERNAME: $(admin-username)
+          API_AUTH_CLIENT_ID: $(api-auth-client-id)
+          API_AUTH_CLIENT_SECRET: $(api-auth-client-secret)
+          API_RDP_CLIENT_ID: $(api-rdp-client-id)
+          API_RDP_TENANT_ID: $(api-rdp-tenant-id)
+          API_RDP_USER_ID: $(api-rdp-user-id)
+          PRODUCT_NAME_ADMIN_PASSWORD: $(product-name-admin-password)
+          PRODUCT_NAME_ADMIN_USERNAME: $(product-name-admin-username)
+          PRODUCT_NAME_CATEGORY_ADMIN_PASSWORD: $(product-name-category-admin-password)
+          PRODUCT_NAME_CATEGORY_ADMIN_USERNAME: $(product-name-category-admin-username)
+          PRODUCT_NAME_LEGAL_ADMIN_PASSWORD: $(product-name-legal-admin-password)
+          PRODUCT_NAME_LEGAL_ADMIN_USERNAME: $(product-name-legal-admin-username)
+          PRODUCT_NAME_REQUESTER_PASSWORD: $(product-name-requester-password)
+          PRODUCT_NAME_REQUESTER_USERNAME: $(product-name-requester-username)
+          PRODUCT_NAME_USER_PASSWORD: $(product-name-user-password)
+          PRODUCT_NAME_USER_USERNAME: $(product-name-user-username)
+        # PublishTestResults task will handle failed tests
+        continueOnError: 'true'
+      - task: CopyFiles@2
+        inputs:
+          sourceFolder: target
+          targetFolder: $(Build.ArtifactStagingDirectory)
+      - task: PublishBuildArtifacts@1
+      - task: PublishTestResults@2
+        inputs:
+          failTaskOnFailedTests: true
