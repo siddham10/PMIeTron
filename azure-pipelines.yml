@@ -6,12 +6,6 @@ trigger:
 steps:
 - checkout: self
 
-- task: DownloadPipelineArtifact@2
-  inputs:
-    artifactName: 'ConnectedGitRepo'
-    targetPath: '$(Pipeline.Workspace)/files'
-    artifactType: 'FilePath'
-    itemPattern: '**'
 
 
 - task: ArchiveFiles@2
