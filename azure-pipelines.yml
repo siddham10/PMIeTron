@@ -6,12 +6,10 @@ trigger:
 steps:
 - checkout: self
 
-
-
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Pipeline.Workspace)/files'
-    includeRootFolder: true
+    includeRootFolder: false  # Adjusted to false
     archiveType: 'zip'
     archiveFile: '$(Pipeline.Workspace)/output/files.zip'
 
