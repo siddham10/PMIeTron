@@ -1,19 +1,27 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
-
-pool:
-  vmImage: ubuntu-latest
+  branches:
+    include:
+      - main  # Replace with your target branch name
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- checkout: self
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: DownloadPipelineArtifact@2
+  inputs:
+    artifactName: 'ConnectedGitRepo'
+    targetPath: '$(Pipeline.Workspace)/files'
+    artifactType: 'FilePath'
+    itemPattern: '**'
+
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Pipeline.Workspace)/files'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Pipeline.Workspace)/output/files.zip'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    artifactName: 'zip_files'  # Replace with your artifact name
+    targetPath: '$(Pipeline.Workspace)/output'
