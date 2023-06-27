@@ -8,10 +8,10 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: 'https://github.com/siddham10/PMIeTron/tree/main/10-json'  # Replace with the path to your folder in the repository
+    rootFolderOrFile: '$(Build.BinariesDirectory)'  # Replace with the path to your folder in the repository
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Pipeline.Workspace)/output/files.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
 
 - task: PublishPipelineArtifact@1
   inputs:
