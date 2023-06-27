@@ -8,14 +8,14 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.BinariesDirectory)'  # Replace with the path to your folder in the repository
+    rootFolderOrFile: 'main/10-json'  # Replace with the path to your folder in the repository
     includeRootFolder: true
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
 
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Pipeline.Workspace)'
-    artifactName: 'artifactName.zip_files'  # Replace with your desired artifact name
+    artifactName: 'files'  # Replace with your desired artifact name
     publishLocation: 'pipeline'
    
