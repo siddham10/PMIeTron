@@ -12,7 +12,7 @@ steps:
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Pipeline.Workspace)/files'  # Replace with the path to your folder in the repository
-    includeRootFolder: true
+    includeRootFolder: false
     archiveType: 'zip'
     archiveFile: '$(Pipeline.Workspace)/output/files.zip'
 
