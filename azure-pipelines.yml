@@ -15,5 +15,7 @@ steps:
 
 - task: PublishPipelineArtifact@1
   inputs:
-    artifactName: 'zip_files'  # Replace with your desired artifact name
-    targetPath: '$(Pipeline.Workspace)/output'
+    targetPath: '$(Pipeline.Workspace)'
+    artifactName: 'artifactName.zip_files'  # Replace with your desired artifact name
+    publishLocation: 'pipeline'
+   
