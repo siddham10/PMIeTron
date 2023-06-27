@@ -3,17 +3,20 @@ trigger:
     include:
       - main  # Replace with your target branch name
 
+pool:
+  vmImage: 'windows-latest'
+
 steps:
 - checkout: self
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Pipeline.Workspace)/files'
-    includeRootFolder: false  # Adjusted to false
+    rootFolderOrFile: '$(Pipeline.Workspace)/files'  # Replace with the path to your folder in the repository
+    includeRootFolder: true
     archiveType: 'zip'
     archiveFile: '$(Pipeline.Workspace)/output/files.zip'
 
 - task: PublishPipelineArtifact@1
   inputs:
-    artifactName: 'zip_files'  # Replace with your artifact name
+    artifactName: 'zip_files'  # Replace with your desired artifact name
     targetPath: '$(Pipeline.Workspace)/output'
