@@ -1,10 +1,6 @@
-trigger:
-  branches:
-    include:
-      - main  # Replace with your target branch name
-      
-steps:
-- checkout: self
+trigger: none
+
+pr: none
 
 stages:
   - stage: deployDS
