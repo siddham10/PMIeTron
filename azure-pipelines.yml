@@ -6,16 +6,12 @@ trigger:
 steps:
 - checkout: self
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '10-json'  # Replace with the path to your folder in the repository
-    includeRootFolder: true
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
-
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(Pipeline.Workspace)'
-    artifactName: 'files'  # Replace with your desired artifact name
-    publishLocation: 'pipeline'
-   
+stages:
+  - stage: deployDS
+    displayName: Deploy DS
+    condition: |
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/')
+    variables:
+      - group: DS
+    jobs:
+      - template: azure-devops/jobs/deploy.yml
