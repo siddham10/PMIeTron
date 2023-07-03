@@ -1,12 +1,21 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - main  # Replace with your target branch name
+      
+steps:
+- checkout: self
 
-pr: none
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '10-json'  # Replace with the path to your folder in the repository
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
 
-stages:
-  - stage: deployDS
-    displayName: Deploy DS
-    condition: |
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/')
-    
-    jobs:
-      - template: jobs/deploy.yml
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Pipeline.Workspace)'
+    artifactName: 'files'  # Replace with your desired artifact name
+    publishLocation: 'pipeline'
+   
