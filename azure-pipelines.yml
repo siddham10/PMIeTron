@@ -2,7 +2,7 @@ trigger:
   branches:
     include:
       - main  # Replace with your target branch name
-      
+
 steps:
 - checkout: self
 
@@ -18,4 +18,20 @@ steps:
     targetPath: '$(Pipeline.Workspace)'
     artifactName: 'files'  # Replace with your desired artifact name
     publishLocation: 'pipeline'
-   
+
+- script: |
+    curl -X POST \
+      -H 'Content-Type: application/zip' \
+      -H '"x-rdp-version","8.1"'\
+      -H '"x-rdp-tenantId","etronds"'\ 
+      -H '"x-rdp-clientId","rdpclient"'\
+      -H '"x-rdp-userId","etronds.systemadmin@riversand.com"'\
+      -H '"x-rdp-userRoles","systemadmin"'\
+      -H '"auth-client-id","j29DTHa7m7VHucWbHg7VvYA75pUjBopS"'\
+      -H '"auth-client-secret","J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB"
+
+      --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip" \
+      https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload
+  displayName: Upload Files to Riversand
+
+- # Add any additional tasks or steps you need
