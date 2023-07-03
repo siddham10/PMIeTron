@@ -33,5 +33,3 @@ steps:
       --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip" \
       https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload
   displayName: Upload Files to Riversand
-
-- # Add any additional tasks or steps you need
