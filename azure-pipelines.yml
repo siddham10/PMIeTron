@@ -9,4 +9,4 @@ stages:
       startsWith(variables['Build.SourceBranch'], 'refs/heads/')
     
     jobs:
-      - template: azure-devops/jobs/deploy.yml
+      - template: jobs/deploy.yml
