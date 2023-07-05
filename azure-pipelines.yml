@@ -23,6 +23,6 @@ steps:
   inputs:
     files: '$(Build.ArtifactStagingDirectory)/files.zip'
     authType: ServiceEndpoint
-    url: 'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload'
+    serviceEndpoint: 'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload'
     remotePath: 'upload/$(Build.BuildId)/'
     options:     '--header "Content-Type: application/zip" --header "x-rdp-version: 8.1" --header "x-rdp-tenantId: etronds" --header "x-rdp-clientId: rdpclient" --header "x-rdp-userId: etronds.admin@riversand.com" --header "x-rdp-userRoles: admin" --header "auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS" --header "auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB"'
