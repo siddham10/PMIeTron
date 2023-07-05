@@ -8,7 +8,7 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '10-json'  # Replace with the path to your folder in the repository
+    rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/rock-entity-header_product_thing_uiConfig.json'  # Replace with the path to your folder in the repository
     includeRootFolder: true
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
