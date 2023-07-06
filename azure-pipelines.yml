@@ -22,7 +22,7 @@ steps:
 - script: |
     # Generate the authToken
     currentTime=$(date -u +"%Y-%m-%dT%H:%M:%S")
-    request="POST /api/binarystreamobjectservice/prepareUpload"
+    request="POST"
     clientId="j29DTHa7m7VHucWbHg7VvYA75pUjBopS"  # Replace with your clientId
     userId="etronds.admin@riversand.com"  # Replace with your userId
     clientAuthKey="J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB"  # Replace with your clientAuthKey
