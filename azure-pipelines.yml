@@ -23,7 +23,7 @@ steps:
     # Generate the authToken
     currentTime=$(date -u +"%Y-%m-%dT%H:%M:%S")
     request="POST /api/binarystreamobjectservice/prepareUpload"
-    clientId="rdpclient"  # Replace with your clientId
+    clientId="j29DTHa7m7VHucWbHg7VvYA75pUjBopS"  # Replace with your clientId
     userId="etronds.admin@riversand.com"  # Replace with your userId
     clientAuthKey="J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB"  # Replace with your clientAuthKey
     signature=$(echo -n "$request&timeStamp=$currentTime" | openssl dgst -binary -sha256 -hmac "$clientAuthKey" | openssl base64 -e)
@@ -42,13 +42,7 @@ steps:
     # Upload the files using cURL
     curl -X PUT \
       -H 'Content-Type: application/zip' \
-      -H 'x-rdp-version:8.1'\
-      -H 'x-rdp-tenantId:etronds'\ 
-      -H 'x-rdp-clientId:rdpclient'\
-      -H 'x-rdp-userId:etronds.admin@riversand.com'\
-      -H 'x-rdp-userRoles:admin'\
-      -H 'auth-client-id:j29DTHa7m7VHucWbHg7VvYA75pUjBopS'\
-      -H 'auth-client-secret:J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB'\
+     
       --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip" \
       "$uploadURL"
       
