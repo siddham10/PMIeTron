@@ -28,6 +28,7 @@ stages:
         
 
   
+  stages:
   - stage: Generate_Auth_Token
     displayName: 'Generate Auth Token'
     jobs:
@@ -58,17 +59,15 @@ stages:
           - checkout: self
 
           - script: |
-              # Retrieve the authToken from the previous stage
+              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"files.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
               authToken=$(echo "$authToken")
 
-              # Make the API request to prepare the upload and extract the upload URL
               prepareUploadResponse=$(curl -X POST \
                 -H "Content-Type: application/json" \
                 -H "Authorization: $authToken" \
-                -d '{}' \
+                -d "$jsonobject" \
                 'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload')
 
-              # Extract the upload URL from the response
               uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
 
               echo "##vso[task.setvariable variable=uploadURL]$uploadURL"
@@ -80,11 +79,12 @@ stages:
       - job: Deploy_File_Job
         displayName: 'Deploy File'
         steps:
-          - checkout: self
           - script: |
+              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"files.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
+              authToken=$(echo "$authToken")
+              uploadURL=$(echo "$uploadURL")
 
-              echo $(uploadURL)  # Verify the value of the uploadURL variable
-              curl -v -X PUT "$(uploadURL)" \
+              curl -v -X PUT "$uploadURL" \
                 -H 'Content-Type: application/json' \
                 -H 'x-rdp-version: 8.1' \
                 -H 'x-rdp-tenantId: etronds' \
@@ -93,10 +93,11 @@ stages:
                 -H 'x-rdp-userRoles: systemadmin' \
                 -H 'auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
                 -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
-                --data-binary "@$(Pipeline.Workspace)/files.zip"
-        
+                --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip"
+
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
+
 
   - stage: Get_Details_From_Tenant
     displayName: 'Get Details From Tenant'
