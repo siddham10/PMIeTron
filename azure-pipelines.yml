@@ -62,11 +62,11 @@ stages:
               echo "Upload URL: $uploadURL"
             displayName: 'Create Folder'          
 
-  - stage: Deploying_Folder
-    displayName: 'Deploying Folder'
+  - stage: Deploy_File
+    displayName: 'Deploy File'
     jobs:
-      - job: Deploying_Folder_Job
-        displayName: 'Deploying Folder'
+      - job: Deploy_File_Job
+        displayName: 'Deploy File'
         pool:
           vmImage: 'ubuntu-latest'
         steps:
@@ -87,11 +87,11 @@ stages:
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
 
-  - stage: Deployment_into_Tenant
-    displayName: 'Deployment into Tenant'
+  - stage: Get_Details_From_Tenant
+    displayName: 'Get Details From Tenant'
     jobs:
-      - job: Deployment_into_Tenant_Job
-        displayName: 'Deployment into Tenant'
+      - job: Get_Details_From_Tenant_Job
+        displayName: 'Get Details From Tenant'
         pool:
           vmImage: 'ubuntu-latest'
         steps:
