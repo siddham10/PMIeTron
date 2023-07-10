@@ -25,7 +25,7 @@ stages:
               echo "ZIP_WORKFLOW_FILE_PATH: $(ZIP_WORKFLOW_FILE_PATH)"
             displayName: 'Initialization'
 
-  - stage: prepare-package
+  - stage: Prepare_Package
     displayName: 'Prepare Package'
     jobs:
       - job: PreparePackageJob
@@ -54,7 +54,7 @@ stages:
               fi
             displayName: 'Prepare Package'
 
-  - stage: creating-folder
+  - stage: Creating_Folder
     displayName: 'Creating Folder'
     jobs:
       - job: CreatingFolderJob
@@ -79,7 +79,7 @@ stages:
               echo "fileuploadUrl: $fileuploadUrl"
             displayName: 'Creating Folder'
 
-  - stage: Deploying-folder
+  - stage: Deploying_Folder
     displayName: 'Deploying Folder'
     jobs:
       - job: DeployingFolderJob
@@ -100,7 +100,7 @@ stages:
                 --data-binary "@$(ZIP_FILE_PATH)"
             displayName: 'Deploying Folder'
 
-  - stage: Deployment-into-tenant
+  - stage: Deployment_Into_Tenant
     displayName: 'Deployment into Tenant'
     jobs:
       - job: DeploymentIntoTenantJob
