@@ -59,9 +59,10 @@ stages:
                 -d '{}' \
                 'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload')
 
+              # Extract the upload URL from the response
               uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
 
-              echo "Upload URL: $uploadURL"
+              echo "##vso[task.setvariable variable=uploadURL]$uploadURL"
             displayName: 'Get Upload URL'
 
   - stage: Deploy_File
@@ -98,7 +99,7 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - script: |
-             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"$(ZIP_NODE)","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
+             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"files","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
              deploymentResponse=$(curl -X POST \
               -H 'Content-Type: application/json' \
               -H 'x-rdp-version: 8.1' \
