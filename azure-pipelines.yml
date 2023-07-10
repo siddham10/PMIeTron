@@ -17,7 +17,7 @@ stages:
               rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/rock-entity-header_product_thing_uiConfig.json'  # Replace with the path to your folder in the repository
               includeRootFolder: true
               archiveType: 'zip'
-              archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/my_artifact.zip'
 
           - task: PublishPipelineArtifact@1
             inputs:
