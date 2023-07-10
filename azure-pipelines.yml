@@ -3,95 +3,99 @@ trigger:
     include:
       - main  # Replace with your target branch name
 
-steps:
-- checkout: self
+variables:
+  ZIP_NODE: 'rock-entity-header_product_thing_uiConfig.json'  # Replace with your desired file name
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/rock-entity-header_product_thing_uiConfig.json'  # Replace with the path to your folder in the repository
-    includeRootFolder: true
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
+stages:
+  - stage: Get-Upload-URL
+    displayName: 'Get Upload URL'
+    jobs:
+      - job: Get-Upload-URL-Job
+        displayName: 'Get Upload URL'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
 
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(Pipeline.Workspace)'
-    artifactName: 'files'  # Replace with your desired artifact name
-    publishLocation: 'pipeline'
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/$(ZIP_NODE)'  # Replace with the path to your folder in the repository
+              includeRootFolder: true
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
 
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: '$(Pipeline.Workspace)'
+              artifactName: 'files'  # Replace with your desired artifact name
+              publishLocation: 'pipeline'
 
-- script: |
-    curl -X POST \
-      -H 'Content-Type: application/zip' \
-      -H 'x-rdp-version:8.1' \
-      -H 'x-rdp-tenantId:etronds' \
-      -H 'x-rdp-clientId:rdpclient' \
-      -H 'x-rdp-userId:etronds.systemadmin@riversand.com' \
-      -H 'x-rdp-userRoles:systemadmin' \
-      -H 'auth-client-id:j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
-      -H 'auth-client-secret:J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
-      --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip" \
-      https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload
-  displayName: Upload Files to Riversand
+          - script: |
+              jsonobject='{"binaryStreamObject":{"id":"guid","type":"seedDataStream","properties":{"objectKey":"$(ZIP_NODE)","originalFileName":"$(ZIP_NODE)"}}}'
+              prepareUploadResponse=$(curl -X POST \
+                -H 'Content-Type: application/json' \
+                -H 'x-rdp-version: 8.1' \
+                -H 'x-rdp-tenantId:etronds' \
+                -H 'x-rdp-clientId: rdpclient' \
+                -H 'x-rdp-userId: etronds.systemadmin@riversand.com' \
+                -H 'x-rdp-userRoles: systemadmin' \
+                -H 'auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
+                -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
+                -d "$jsonobject" \
+                'https://xx.com/api/binarystreamobjectservice/prepareUpload')
 
-- script: |
-    - script: |
-          jsonobject='{"binaryStreamObject":{"id":"guid","type":"seedDataStream","properties":{"objectKey":"'$ZIP_NODE'","originalFileName":"'$ZIP_NODE'"}}}'
-          
-          curl -X POST \
-            -H 'Content-Type: application/json' \
-            -H 'x-rdp-version: 8.1' \
-            -H 'x-rdp-tenantId:etronds' \
-            -H 'x-rdp-clientId: rdpclient' \
-            -H 'x-rdp-userId: etronds.systemadmin@riversand.com' \
-            -H 'x-rdp-userRoles: systemadmin' \
-            -H 'auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
-            -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
-            -d "$jsonobject" \
-            'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload'
-          
-          # Capture the fileuploadUrl response and perform further operations
-          uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
-          # You may need to parse the response and extract the required information
-        displayName: 'Create Folder'
+              uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
 
-  - stage: Deploying-folder
+              echo "Upload URL: $uploadURL"
+            displayName: 'Create Folder'
+
+  - stage: Deploying-Folder
     displayName: 'Deploying Folder'
-    steps:
-      - script: |
-          curl -v -X PUT "${uploadUrl}" \
-            --header "x-ms-meta-x_rdp_userroles: systemadmin" \
-            --header "x-ms-meta-x_rdp_tenantid: etronds" \
-            --header "x-ms-meta-originalfilename: $ZIP_NODE" \
-            --header "x-ms-blob-content-disposition: attachment; filename=$ZIP_NODE" \
-            --header "x-ms-meta-type: disposition" \
-            --header "x-ms-meta-x_rdp_clientid: j29DTHa7m7VHucWbHg7VvYA75pUjBopS" \
-            --header "x-ms-meta-x_rdp_userid: systemadmin@riversand.com" \
-            --header "x-ms-meta-binarystreamobjectid: guid" \
-            --header "x-ms-blob-type: BlockBlob" \
-            --header "Content-Type: application/zip" \
-            --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip" \
-            "$uploadURL"
-        displayName: 'Deploy Folder'
+    jobs:
+      - job: Deploying-Folder-Job
+        displayName: 'Deploying Folder'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: |
+              curl -v -X PUT "$uploadURL" \
+                --header "x-ms-meta-x_rdp_userroles: systemadmin" \
+                --header "x-ms-meta-x_rdp_tenantid: etronds" \
+                --header "x-ms-meta-originalfilename: $(ZIP_NODE)" \
+                --header "x-ms-blob-content-disposition: attachment; filename=$(ZIP_NODE)" \
+                --header "x-ms-meta-type: disposition" \
+                --header "x-ms-meta-x_rdp_clientid: rdpclient" \
+                --header "x-ms-meta-x_rdp_userid: etronds.systemadmin@riversand.com" \
+                --header "x-ms-meta-binarystreamobjectid: guid" \
+                --header "x-ms-blob-type: BlockBlob" \
+                --header "Content-Type: application/zip" \
+                --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip"
 
-  - stage: Deployment-into-tenant
+              echo "Folder deployed successfully."
+            displayName: 'Deploy Folder'
+
+  - stage: Deployment-into-Tenant
     displayName: 'Deployment into Tenant'
-    steps:
-      - script: |
-          jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"'$ZIP_NODE'","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
-          
-          curl -X POST \
-            -H 'Content-Type: application/json' \
-            -H 'x-rdp-version: 8.1' \
-            -H 'x-rdp-tenantId:etronds' \
-            -H 'x-rdp-clientId: rdpclient' \
-            -H 'x-rdp-userId: etronds.systemadmin@riversand.com' \
-            -H 'x-rdp-userRoles: systemadmin' \
-            -H 'auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
-            -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
-            -d "$jsonobject" \
-            'https://etronds.riversand.com/api/adminservice/deploytenantseed'
-          
-          # Perform any further processing or validation as required
-        displayName: 'Deployment'
+    jobs:
+      - job: Deployment-into-Tenant-Job
+        displayName: 'Deployment into Tenant'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: |
+              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"$(ZIP_NODE)","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
+              
+              curl -X POST \
+                -H 'Content-Type: application/json' \
+                -H 'x-rdp-version: 8.1' \
+                -H 'x-rdp-tenantId:etronds' \
+                -H 'x-rdp-clientId: rdpclient' \
+                -H 'x-rdp-userId: etronds.systemadmin@riversand.com' \
+                -H 'x-rdp-userRoles: systemadmin' \
+                -H 'auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
+                -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
+                -d "$jsonobject" \
+                'https://etronds.riversand.com/api/adminservice/deploytenantseed'
 
+              echo "Deployment completed successfully."
+            displayName: 'Deployment'
