@@ -30,7 +30,7 @@ stages:
               artifactName: 'files'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
           
-            displayName: 'Publish Zip File'
+        displayName: 'Publish Zip File'
 
   - stage: Get_Upload_URL
     displayName: 'Get Upload URL'
@@ -74,7 +74,7 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - script: |
-              curl -v -X PUT "$uploadURL" \
+              curl -v -X PUT "$(uploadURL)" \
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
                 --header "x-ms-meta-x_rdp_tenantid: etronds" \
                 --header "x-ms-meta-originalfilename: files" \
@@ -85,7 +85,7 @@ stages:
                 --header "x-ms-meta-binarystreamobjectid: guid" \
                 --header "x-ms-blob-type: BlockBlob" \
                 --header "Content-Type: application/zip" \
-                --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip"
+                --data-binary "@$(Pipeline.Workspace)/files.zip"
         
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
