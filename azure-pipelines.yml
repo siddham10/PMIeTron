@@ -25,10 +25,6 @@ stages:
               artifactName: 'files.zip'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
           
-        
-
-  
-  stages:
   - stage: Generate_Auth_Token
     displayName: 'Generate Auth Token'
     jobs:
