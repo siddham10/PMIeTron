@@ -7,10 +7,10 @@ variables:
   ZIP_NODE: 'rock-entity-header_product_thing_uiConfig.json'  # Replace with your desired file name
 
 stages:
-  - stage: Get-Upload-URL
+  - stage: Get_Upload_URL
     displayName: 'Get Upload URL'
     jobs:
-      - job: Get-Upload-URL-Job
+      - job: Get_Upload_URL_Job
         displayName: 'Get Upload URL'
         pool:
           vmImage: 'ubuntu-latest'
@@ -49,10 +49,10 @@ stages:
               echo "Upload URL: $uploadURL"
             displayName: 'Create Folder'
 
-  - stage: Deploying-Folder
+  - stage: Deploying_Folder
     displayName: 'Deploying Folder'
     jobs:
-      - job: Deploying-Folder-Job
+      - job: Deploying_Folder_Job
         displayName: 'Deploying Folder'
         pool:
           vmImage: 'ubuntu-latest'
@@ -74,10 +74,10 @@ stages:
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
 
-  - stage: Deployment-into-Tenant
+  - stage: Deployment_into_Tenant
     displayName: 'Deployment into Tenant'
     jobs:
-      - job: Deployment-into-Tenant-Job
+      - job: Deployment_into_Tenant_Job
         displayName: 'Deployment into Tenant'
         pool:
           vmImage: 'ubuntu-latest'
