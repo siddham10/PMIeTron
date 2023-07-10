@@ -76,8 +76,8 @@ stages:
               curl -v -X PUT "$uploadURL" \
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
                 --header "x-ms-meta-x_rdp_tenantid: etronds" \
-                --header "x-ms-meta-originalfilename: $(ZIP_NODE)" \
-                --header "x-ms-blob-content-disposition: attachment; filename=$(ZIP_NODE)" \
+                --header "x-ms-meta-originalfilename: files" \
+                --header "x-ms-blob-content-disposition: attachment; filename=files" \
                 --header "x-ms-meta-type: disposition" \
                 --header "x-ms-meta-x_rdp_clientid: rdpclient" \
                 --header "x-ms-meta-x_rdp_userid: etronds.systemadmin@riversand.com" \
@@ -85,6 +85,7 @@ stages:
                 --header "x-ms-blob-type: BlockBlob" \
                 --header "Content-Type: application/zip" \
                 --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip"
+        
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
 
@@ -101,7 +102,7 @@ stages:
              deploymentResponse=$(curl -X POST \
               -H 'Content-Type: application/json' \
               -H 'x-rdp-version: 8.1' \
-              -H 'x-rdp-tenantId:etronds' \
+              -H 'x-rdp-tenantId: etronds' \
               -H 'x-rdp-clientId: rdpclient' \
               -H 'x-rdp-userId: etronds.systemadmin@riversand.com' \
               -H 'x-rdp-userRoles: systemadmin' \
@@ -109,5 +110,6 @@ stages:
               -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
               -d "$jsonobject" \
               'https://etronds.riversand.com/api/adminservice/deploytenantseed')
+
               echo "$deploymentResponse"
             displayName: 'Deployment'
