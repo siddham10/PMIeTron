@@ -30,7 +30,7 @@ stages:
               artifactName: 'files'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
           
-        displayName: 'Publish Zip File'
+      
 
   - stage: Get_Upload_URL
     displayName: 'Get Upload URL'
