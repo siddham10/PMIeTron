@@ -22,7 +22,7 @@ stages:
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: '$(Pipeline.Workspace)'
-              artifactName: 'my_artifact'  # Replace with your desired artifact name
+              artifactName: 'my-artifact'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
             displayName: 'Publish Zip File'
           
@@ -57,7 +57,7 @@ stages:
 
           - script: |
               jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"my-artifact","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
-              authToken=$(echo "$authToken")
+              authToken=$(echo $(authToken))
 
               prepareUploadResponse=$(curl -X POST \
                 -H "Content-Type: application/json" \
@@ -77,17 +77,17 @@ stages:
         displayName: 'Deploy File'
         steps:
           - checkout: self
+          
           - task: DownloadPipelineArtifact@2
             inputs:
-             artifactName: 'my-artifact'  # Replace with the same artifact name used in the Publish_Zip_File stage
-             targetPath: '$(Pipeline.Workspace)'
-             downloadPath: '$(Pipeline.Workspace)'
-           displayName: 'Download Zip File'
+              artifactName: 'my-artifact'  # Replace with the same artifact name used in the Publish_Zip_File stage
+              downloadPath: '$(Pipeline.Workspace)'
+            displayName: 'Download Zip File' 
 
           - script: |
               jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"my-artifact","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
-              authToken=$(echo "$authToken")
-              uploadURL=$(echo "$uploadURL")
+              authToken=$(echo $(authToken))
+              uploadURL=$(echo $(uploadURL))
 
               curl -v -X PUT "$uploadURL" \
                 -H 'Content-Type: application/json' \
@@ -98,11 +98,10 @@ stages:
                 -H 'x-rdp-userRoles: systemadmin' \
                 -H 'auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
                 -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
-                --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip"
+                --data-binary "@$(Pipeline.Workspace)/files.zip"
 
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
-
 
   - stage: Get_Details_From_Tenant
     displayName: 'Get Details From Tenant'
