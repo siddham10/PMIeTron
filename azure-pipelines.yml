@@ -8,7 +8,7 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '10-json'  # Replace with the path to your folder in the repository
+    rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/rock-entity-header_product_thing_uiConfig.json'  # Replace with the path to your folder in the repository
     includeRootFolder: true
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
@@ -18,29 +18,9 @@ steps:
     targetPath: '$(Pipeline.Workspace)'
     artifactName: 'files'  # Replace with your desired artifact name
     publishLocation: 'pipeline'
-    
-- script: |
-    # Generate the authToken
-    currentTime=$(date -u +"%Y-%m-%dT%H:%M:%S")
-    request="POST https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload"
-    clientId="rdpclient"  # Replace with your clientId
-    userId="etronds.systemadmin@riversand.com"  # Replace with your userId
-    clientAuthKey="J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB"  # Replace with your clientAuthKey
-    signature=$(echo -n "$request&timeStamp=$currentTime" | openssl dgst -binary -sha256 -hmac "$clientAuthKey" | openssl base64 -e)
-    authToken="$clientId,$userId,$signature"
-    
-    # Make the API request to prepare the upload and extract the upload URL
-    prepareUploadResponse=$(curl -X POST \
-      -H "Content-Type: application/json" \
-      -H "Authorization: $authToken" \
-      -d '{}' \
-      'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload')
-    
-    # Extract the upload URL from the response
-    uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
 
-    # Upload the files using cURL
-    curl -X PUT \
+- script: |
+    curl -X POST \
       -H 'Content-Type: application/zip' \
       -H 'x-rdp-version:8.1'\
       -H 'x-rdp-tenantId:etronds'\ 
@@ -50,6 +30,6 @@ steps:
       -H 'auth-client-id:j29DTHa7m7VHucWbHg7VvYA75pUjBopS'\
       -H 'auth-client-secret:J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB'\
       --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip" \
-      "$uploadURL"
-      
+      'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload'
+  echo "File upload successful!"
   displayName: Upload Files to Riversand
