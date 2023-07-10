@@ -29,7 +29,6 @@ stages:
               targetPath: '$(Pipeline.Workspace)'
               artifactName: 'files'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
-
           
             displayName: 'Publish Zip File'
 
@@ -44,23 +43,26 @@ stages:
           - checkout: self
 
           - script: |
-              jsonobject='{"binaryStreamObject":{"id":"guid","type":"seedDataStream","properties":{"objectKey":"$(ZIP_NODE)","originalFileName":"$(ZIP_NODE)"}}}'
+              # Generate the authToken
+              currentTime=$(date -u +"%Y-%m-%dT%H:%M:%S")
+              request="POST https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload"
+              clientId="rdpclient"  # Replace with your clientId
+              userId="etronds.systemadmin@riversand.com"  # Replace with your userId
+              clientAuthKey="J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB"  # Replace with your clientAuthKey
+              signature=$(echo -n "$request&timeStamp=$currentTime" | openssl dgst -binary -sha256 -hmac "$clientAuthKey" | openssl base64 -e)
+              authToken="$clientId,$userId,$signature"
+    
+              # Make the API request to prepare the upload and extract the upload URL
               prepareUploadResponse=$(curl -X POST \
-                -H 'Content-Type: application/json' \
-                -H 'x-rdp-version: 8.1' \
-                -H 'x-rdp-tenantId:etronds' \
-                -H 'x-rdp-clientId: rdpclient' \
-                -H 'x-rdp-userId: etronds.systemadmin@riversand.com' \
-                -H 'x-rdp-userRoles: systemadmin' \
-                -H 'auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
-                -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
-                -d "$jsonobject" \
-                https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload)
+                -H "Content-Type: application/json" \
+                -H "Authorization: $authToken" \
+                -d '{}' \
+                'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload')
 
               uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
 
               echo "Upload URL: $uploadURL"
-            displayName: 'Upload URL'          
+            displayName: 'Get Upload URL'
 
   - stage: Deploy_File
     displayName: 'Deploy File'
@@ -83,7 +85,6 @@ stages:
                 --header "x-ms-blob-type: BlockBlob" \
                 --header "Content-Type: application/zip" \
                 --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip"
-
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
 
@@ -108,6 +109,5 @@ stages:
               -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
               -d "$jsonobject" \
               'https://etronds.riversand.com/api/adminservice/deploytenantseed')
-
-             echo "$deploymentResponse"
+              echo "$deploymentResponse"
             displayName: 'Deployment'
