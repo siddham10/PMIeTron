@@ -33,5 +33,3 @@ steps:
       'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload'
       echo "File upload successful!"
       displayName: Upload Files to Riversand
-
-- # Add any additional tasks or steps you need
