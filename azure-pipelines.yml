@@ -7,11 +7,11 @@ variables:
   ZIP_NODE: 'rock-entity-header_product_thing_uiConfig.json'  # Replace with your desired file name
 
 stages:
-  - stage: Get_Upload_URL
-    displayName: 'Get Upload URL'
+  - stage: Publish_Zip_File
+    displayName: 'Publish Zip File'
     jobs:
-      - job: Get_Upload_URL_Job
-        displayName: 'Get Upload URL'
+      - job: Publish_Zip_File_Job
+        displayName: 'Publish Zip File'
         pool:
           vmImage: 'ubuntu-latest'
         steps:
@@ -30,6 +30,19 @@ stages:
               artifactName: 'files'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
 
+          
+            displayName: 'Publish Zip File'
+
+  - stage: Get_Upload_URL
+    displayName: 'Get Upload URL'
+    jobs:
+      - job: Get_Upload_URL_Job
+        displayName: 'Get Upload URL'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+
           - script: |
               jsonobject='{"binaryStreamObject":{"id":"guid","type":"seedDataStream","properties":{"objectKey":"$(ZIP_NODE)","originalFileName":"$(ZIP_NODE)"}}}'
               prepareUploadResponse=$(curl -X POST \
@@ -47,7 +60,7 @@ stages:
               uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
 
               echo "Upload URL: $uploadURL"
-            displayName: 'Create Folder'
+            displayName: 'Create Folder'          
 
   - stage: Deploying_Folder
     displayName: 'Deploying Folder'
