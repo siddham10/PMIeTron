@@ -27,7 +27,7 @@ stages:
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: '$(Pipeline.Workspace)'
-              artifactName: 'files'  # Replace with your desired artifact name
+              artifactName: 'files.zip'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
           
         
@@ -62,7 +62,7 @@ stages:
               # Extract the upload URL from the response
               uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
 
-              echo "##vso[task.setvariable variable=uploadURL]$uploadURL"
+              echo "##vso[task.setvariable variable=UPLOAD_URL]$uploadURL"
             displayName: 'Get Upload URL'
 
   - stage: Deploy_File
@@ -75,12 +75,12 @@ stages:
         steps:
           - checkout: self
           - script: |
-              echo $(uploadURL)  # Verify the value of the uploadURL variable
-              curl -v -X PUT "$(uploadURL)" \
+              echo $UPLOAD_URL  # Verify the value of the UPLOAD_URL variable
+              curl -v -X PUT "$UPLOAD_URL" \
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
                 --header "x-ms-meta-x_rdp_tenantid: etronds" \
-                --header "x-ms-meta-originalfilename: files" \
-                --header "x-ms-blob-content-disposition: attachment; filename=files" \
+                --header "x-ms-meta-originalfilename: files.zip" \
+                --header "x-ms-blob-content-disposition: attachment; filename=files.zip" \
                 --header "x-ms-meta-type: disposition" \
                 --header "x-ms-meta-x_rdp_clientid: rdpclient" \
                 --header "x-ms-meta-x_rdp_userid: etronds.systemadmin@riversand.com" \
@@ -101,7 +101,7 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - script: |
-             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"files","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
+             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"files.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
              deploymentResponse=$(curl -X POST \
               -H 'Content-Type: application/json' \
               -H 'x-rdp-version: 8.1' \
