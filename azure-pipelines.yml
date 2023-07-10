@@ -107,7 +107,7 @@ stages:
               -H 'auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
               -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
               -d "$jsonobject" \
-              'https://etronds.riversand.com/api/adminservice/deploytenantseed'
+              'https://etronds.riversand.com/api/adminservice/deploytenantseed')
 
              echo "$deploymentResponse"
             displayName: 'Deployment'
