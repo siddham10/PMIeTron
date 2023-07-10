@@ -12,8 +12,6 @@ stages:
     jobs:
       - job: Publish_Zip_File_Job
         displayName: 'Publish Zip File'
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
           - checkout: self
 
@@ -30,15 +28,13 @@ stages:
               artifactName: 'files'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
           
-       
+        
 
   - stage: Get_Upload_URL
     displayName: 'Get Upload URL'
     jobs:
       - job: Get_Upload_URL_Job
         displayName: 'Get Upload URL'
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
           - checkout: self
 
@@ -70,13 +66,13 @@ stages:
     jobs:
       - job: Deploy_File_Job
         displayName: 'Deploy File'
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
           - checkout: self
           - script: |
+
               echo $(uploadURL)  # Verify the value of the uploadURL variable
               curl -v -X PUT "$(uploadURL)" \
+
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
                 --header "x-ms-meta-x_rdp_tenantid: etronds" \
                 --header "x-ms-meta-originalfilename: files" \
@@ -87,6 +83,7 @@ stages:
                 --header "x-ms-meta-binarystreamobjectid: guid" \
                 --header "x-ms-blob-type: BlockBlob" \
                 --header "Content-Type: application/zip" \
+
                 --data-binary "@$(Pipeline.Workspace)/files.zip"
         
               echo "Folder deployed successfully."
@@ -97,10 +94,9 @@ stages:
     jobs:
       - job: Get_Details_From_Tenant_Job
         displayName: 'Get Details From Tenant'
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
           - script: |
+
              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"files","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
              deploymentResponse=$(curl -X POST \
               -H 'Content-Type: application/json' \
