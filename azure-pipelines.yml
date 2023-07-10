@@ -60,7 +60,7 @@ stages:
               uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
 
               echo "Upload URL: $uploadURL"
-            displayName: 'Create Folder'          
+            displayName: 'Upload URL'          
 
   - stage: Deploy_File
     displayName: 'Deploy File'
