@@ -22,8 +22,9 @@ stages:
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: '$(Pipeline.Workspace)'
-              artifactName: 'files.zip'  # Replace with your desired artifact name
+              artifactName: 'my_artifact'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
+            displayName: 'Publish Zip File'
           
   - stage: Generate_Auth_Token
     displayName: 'Generate Auth Token'
@@ -55,7 +56,7 @@ stages:
           - checkout: self
 
           - script: |
-              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"files.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
+              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"my-artifact","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
               authToken=$(echo "$authToken")
 
               prepareUploadResponse=$(curl -X POST \
@@ -75,8 +76,16 @@ stages:
       - job: Deploy_File_Job
         displayName: 'Deploy File'
         steps:
+          - checkout: self
+          - task: DownloadPipelineArtifact@2
+            inputs:
+             artifactName: 'my-artifact'  # Replace with the same artifact name used in the Publish_Zip_File stage
+             targetPath: '$(Pipeline.Workspace)'
+             downloadPath: '$(Pipeline.Workspace)'
+           displayName: 'Download Zip File'
+
           - script: |
-              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"files.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
+              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"my-artifact","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
               authToken=$(echo "$authToken")
               uploadURL=$(echo "$uploadURL")
 
@@ -103,7 +112,7 @@ stages:
         steps:
           - script: |
 
-             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"files.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
+             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"my-artifact","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
              deploymentResponse=$(curl -X POST \
               -H 'Content-Type: application/json' \
               -H 'x-rdp-version: 8.1' \
