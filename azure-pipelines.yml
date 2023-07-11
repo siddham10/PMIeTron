@@ -4,53 +4,53 @@ trigger:
       - main
 
 stages:
-  - stage: Publish_Zip_File
+- stage: Publish_Zip_File
+  displayName: 'Publish Zip File'
+  jobs:
+  - job: Publish_Zip_File_Job
     displayName: 'Publish Zip File'
-    jobs:
-      - job: Publish_Zip_File_Job
-        displayName: 'Publish Zip File'
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - checkout: self
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
 
-          - task: ArchiveFiles@2
-            inputs:
-              rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/rock-entity-header_product_thing_uiConfig.json'  # Replace with the path to your folder in the repository
-              includeRootFolder: true
-              archiveType: 'zip'
-              archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/rock-entity-header_product_thing_uiConfig.json'  # Replace with the path to your folder in the repository
+        includeRootFolder: true
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
 
-          - task: PublishPipelineArtifact@1
-            inputs:
-              targetPath: '$(Pipeline.Workspace)'
-              artifactName: 'new_artifact'  # Replace with your desired artifact name
-              publishLocation: 'pipeline'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)'
+        artifactName: 'new_artifact'  # Replace with your desired artifact name
+        publishLocation: 'pipeline'
 
-  - stage: Initialization
-    displayName: 'Initialization...'
-    dependsOn: Publish_Zip_File
-    jobs:
-      - job: InitializationJob
-        displayName: 'Initialization Job'
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - script: |
-              ZIP_NODE=$(echo "$(Build.SourceBranch)" | tr / .)
-              ZIP_WORKFLOW="postdeployment.zip"
-              jsonIncludefilepath="$(Build.SourcesDirectory)/deployment-artifacts/includedfile.json"
-              zipfilepath="$(Build.SourcesDirectory)/$(ZIP_NODE).zip"
-              zip_workflowfilepath="$(Build.SourcesDirectory)/$(ZIP_WORKFLOW)"
+- stage: Initialization
+  displayName: 'Initialization...'
+  dependsOn: Publish_Zip_File
+  jobs:
+  - job: InitializationJob
+    displayName: 'Initialization Job'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        ZIP_NODE=$(echo "$(Build.SourceBranch)" | tr / .)
+        ZIP_WORKFLOW="postdeployment.zip"
+        jsonIncludefilepath="$(Build.SourcesDirectory)/deployment-artifacts/includedfile.json"
+        zipfilepath="$(Build.SourcesDirectory)/$(ZIP_NODE).zip"
+        zip_workflowfilepath="$(Build.SourcesDirectory)/$(ZIP_WORKFLOW)"
 
-              echo "ZIP_NODE: $ZIP_NODE"
-              echo "ZIP_WORKFLOW: $ZIP_WORKFLOW"
-              echo "jsonIncludefilepath: $jsonIncludefilepath"
-              echo "zipfilepath: $zipfilepath"
-              echo "zip_workflowfilepath: $zip_workflowfilepath"
-            displayName: 'Initialize variables'
+        echo "ZIP_NODE: $ZIP_NODE"
+        echo "ZIP_WORKFLOW: $ZIP_WORKFLOW"
+        echo "jsonIncludefilepath: $jsonIncludefilepath"
+        echo "zipfilepath: $zipfilepath"
+        echo "zip_workflowfilepath: $zip_workflowfilepath"
+      displayName: 'Initialize variables'
 
-  - stage: PreparePackage
+- stage: PreparePackage
   displayName: 'prepare-package'
   dependsOn: Initialization
   jobs:
