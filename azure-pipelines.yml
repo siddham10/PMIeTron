@@ -4,8 +4,32 @@ trigger:
       - main
 
 stages:
+- stage: Publish_Zip_File
+  displayName: 'Publish Zip File'
+  jobs:
+  - job: Publish_Zip_File_Job
+    displayName: 'Publish Zip File'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '10-json'  # Replace with the path to your folder in the repository
+        includeRootFolder: true
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)'
+        artifactName: 'files'  # Replace with your desired artifact name
+        publishLocation: 'pipeline'
+
 - stage: Initialization
   displayName: 'Initialization...'
+  dependsOn: Publish_Zip_File
   jobs:
   - job: InitializationJob
     displayName: 'Initialization Job'
@@ -67,6 +91,7 @@ stages:
       displayName: 'Prepare package'
 
 # The rest of the stages and jobs remain the same...
+
 
 
 - stage: CreatingFolder
