@@ -90,10 +90,6 @@ stages:
         fi
       displayName: 'Prepare package'
 
-# The rest of the stages and jobs remain the same...
-
-
-
 - stage: CreatingFolder
   displayName: 'creating folder'
   dependsOn: PreparePackage
@@ -175,4 +171,3 @@ stages:
           "https://etronds.riversand.com/api/adminservice/deploytenantseed"
 
       displayName: 'Deployment'
-
