@@ -119,30 +119,31 @@ stages:
   displayName: 'Deploying folder'
   dependsOn: CreatingFolder
   jobs:
-  - job: DeployingFolderJob
-    displayName: 'Deploying Folder Job'
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - script: |
-        echo "==== Deploying folder ===="
+    - job: DeployingFolderJob
+      displayName: 'Deploying Folder Job'
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+      - script: |
+          echo "==== Deploying folder ===="
+          
+          encodedFileuploadUrl=$(echo $fileuploadUrl | sed 's/%/%%/g')
+          zipNode=$(echo "$(Build.SourceBranch)" | tr / .)
+
+          curl -v -X PUT $encodedFileuploadUrl \
+            -H "x-ms-meta-x_rdp_userroles: systemadmin" \
+            -H "x-ms-meta-x_rdp_tenantid: etronds" \
+            -H "x-ms-meta-originalfilename: $zipNode" \
+            -H "x-ms-blob-content-disposition: attachment; filename=$zipNode" \
+            -H "x-ms-meta-type: disposition" \
+            -H "x-ms-meta-x_rdp_clientid: rdpclient" \
+            -H "x-ms-meta-x_rdp_userid: etronds.systemadmin@riversand.com" \
+            -H "x-ms-meta-binarystreamobjectid: guid" \
+            -H "x-ms-blob-type: BlockBlob" \
+            -H "Content-Type: application/zip" \
+            --data-binary "@$zipfilepath"
         
-        encodedFileuploadUrl=$(echo $fileuploadUrl | sed 's/%/%%/g')
-        
-        curl -v -X PUT $encodedFileuploadUrl \
-          -H "x-ms-meta-x_rdp_userroles: systemadmin" \
-          -H "x-ms-meta-x_rdp_tenantid: etronds" \
-          -H "x-ms-meta-originalfilename: $(Build.SourceBranch | tr / .)" \
-          -H "x-ms-blob-content-disposition: attachment; filename=$(Build.SourceBranch | tr / .)" \
-          -H "x-ms-meta-type: disposition" \
-          -H "x-ms-meta-x_rdp_clientid: rdpclient" \
-          -H "x-ms-meta-x_rdp_userid: etronds.systemadmin@riversand.com" \
-          -H "x-ms-meta-binarystreamobjectid: guid" \
-          -H "x-ms-blob-type: BlockBlob" \
-          -H "Content-Type: application/zip" \
-          --data-binary "@$zipfilepath"
-        
-      displayName: 'Deploy folder'
+        displayName: 'Deploy folder'
 
 - stage: DeploymentIntoTenant
   displayName: 'Deployment into tenant'
