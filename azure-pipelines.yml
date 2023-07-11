@@ -16,7 +16,7 @@ stages:
 
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '10-json'  # Replace with the path to your folder in the repository
+        rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/rock-entity-header_product_thing_uiConfig.json'  # Replace with the path to your folder in the repository
         includeRootFolder: true
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
@@ -24,7 +24,7 @@ stages:
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Pipeline.Workspace)'
-        artifactName: 'files'  # Replace with your desired artifact name
+        artifactName: 'new_artifact'  # Replace with your desired artifact name
         publishLocation: 'pipeline'
 
 - stage: Initialization
@@ -60,7 +60,7 @@ stages:
       vmImage: 'ubuntu-latest'
     steps:
     - script: |
-        includedFilenamesString=$(echo '[{"filename":"rock-business-actions_thing_admin_pmi.json"},{"filename":"rock-entity-search-result_thing_pmiproduct_admin_uiConfig.json"}]')
+        includedFilenamesString='[{"filename":"rock-entity-header_product_thing_uiConfig.json"}]'
         
         echo "includedFilenamesString: $includedFilenamesString"
 
@@ -90,6 +90,8 @@ stages:
         fi
       displayName: 'Prepare package'
 
+# The rest of the stages and jobs remain the same...
+
 - stage: CreatingFolder
   displayName: 'creating folder'
   dependsOn: PreparePackage
@@ -112,9 +114,12 @@ stages:
           -H "auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS" \
           -H "auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB" \
           -d "$jsonobject" \
-          "https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload"
+          https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload
+      displayName: 'Creating folder'
 
-      displayName: 'Create folder'
+# The remaining stages and jobs continue...
+
+
 
 - stage: DeployingFolder
   displayName: 'Deploying folder'
