@@ -12,8 +12,6 @@ stages:
     jobs:
       - job: Publish_Zip_File_Job
         displayName: 'Publish Zip File'
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
           - checkout: self
 
@@ -22,17 +20,18 @@ stages:
               rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/$(ZIP_NODE)'  # Replace with the path to your folder in the repository
               includeRootFolder: true
               archiveType: 'zip'
-              archiveFile: '$(Build.ArtifactStagingDirectory)/files.zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/drop.zip'
 
           - task: PublishPipelineArtifact@1
             inputs:
-              targetPath: '$(Pipeline.Workspace)'
-              artifactName: 'files'  # Replace with your desired artifact name
+              targetPath: '$(Build.ArtifactStagingDirectory)'
+              artifactName: 'drop'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
 
           
             displayName: 'Publish Zip File'
 
+  
   - stage: Get_Upload_URL
     displayName: 'Get Upload URL'
     jobs:
@@ -44,32 +43,42 @@ stages:
           - checkout: self
 
           - script: |
-              jsonobject='{"binaryStreamObject":{"id":"guid","type":"seedDataStream","properties":{"objectKey":"$(ZIP_NODE)","originalFileName":"$(ZIP_NODE)"}}}'
-              prepareUploadResponse=$(curl -X POST \
-                -H 'Content-Type: application/json' \
-                -H 'x-rdp-version: 8.1' \
-                -H 'x-rdp-tenantId:etronds' \
-                -H 'x-rdp-clientId: rdpclient' \
-                -H 'x-rdp-userId: etronds.systemadmin@riversand.com' \
-                -H 'x-rdp-userRoles: systemadmin' \
-                -H 'auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS' \
-                -H 'auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB' \
-                -d "$jsonobject" \
-                'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload')
+              # Define the JSON request body
+              jsonBody='{"binaryStreamObject": {"id": "guid","type": "seedDataStream","properties": {"objectKey": "rock-entity-header_product_thing_uiConfig.json","originalFileName": "rock-entity-header_product_thing_uiConfig.json"}}}'
+              # Make the POST request and store the response in a variable
+              response=$(curl -X POST \
+                -H "Content-Type: application/json" \
+                -H "x-rdp-version: 8.1" \
+                -H "x-rdp-tenantId: etronds" \
+                -H "x-rdp-clientId: rdpclient" \
+                -H "x-rdp-userId: etronds.systemadmin@riversand.com" \
+                -H "x-rdp-userRoles: systemadmin" \
+                -H "auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS" \
+                -H "auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB" \
+                -d "$jsonBody" \
+                https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload))
 
-              uploadURL=$(echo "$prepareUploadResponse" | jq -r '.response.binaryStreamObjects[0].properties.uploadURL')
+                # Extract the uploadURL from the response using jq
+              uploadURL=$(echo "$response" | jq -r '.response.binaryStreamObjects[0].data.properties.uploadURL')
 
               echo "Upload URL: $uploadURL"
-            displayName: 'Create Folder'          
+            displayName: 'Make POST request and extract uploadURL'
+
+                 
 
   - stage: Deploy_File
     displayName: 'Deploy File'
     jobs:
       - job: Deploy_File_Job
         displayName: 'Deploy File'
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+             buildType: 'current'
+             downloadType: 'single'
+             artifactName: 'drop'
+             downloadPath: '$(Build.ArtifactStagingDirectory)'
+
           - script: |
               curl -v -X PUT "$uploadURL" \
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
