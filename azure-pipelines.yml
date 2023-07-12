@@ -20,7 +20,7 @@ stages:
               rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/$(ZIP_NODE)'  # Replace with the path to your folder in the repository
               includeRootFolder: true
               archiveType: 'zip'
-              archiveFile: '$(Build.ArtifactStagingDirectory)/drop.zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/my_artifact.zip'
 
           - task: PublishPipelineArtifact@1
             inputs:
@@ -31,14 +31,6 @@ stages:
           
             displayName: 'Publish Zip File'
 
-  
-  - stage: Get_Upload_URL
-    displayName: 'Get Upload URL'
-    jobs:
-      - job: Get_Upload_URL_Job
-        displayName: 'Get Upload URL'
-        steps:
-          - checkout: self
 
           - script: |
               # Define the JSON request body
@@ -62,17 +54,7 @@ stages:
               echo "Upload URL: $uploadURL"
               
             displayName: 'Make POST request and extract uploadURL'
-
                  
-
-  - stage: Deploy_File
-    displayName: 'Deploy File'
-    jobs:
-      - job: Deploy_File_Job
-        displayName: 'Deploy File'
-        steps:
-          - checkout: self
-         
           - script: |
               curl -v -X PUT "$uploadURL" \
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
@@ -90,14 +72,6 @@ stages:
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
 
-  - stage: Get_Details_From_Tenant
-    displayName: 'Get Details From Tenant'
-    jobs:
-      - job: Get_Details_From_Tenant_Job
-        displayName: 'Get Details From Tenant'
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
           - script: |
              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"my_artifact.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
              deploymentResponse=$(curl -X POST \
