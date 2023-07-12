@@ -25,7 +25,7 @@ stages:
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: '$(Build.ArtifactStagingDirectory)'
-                # Replace with your desired artifact name
+              artifactName: 'my_artifact'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
 
           
@@ -86,7 +86,7 @@ stages:
                 --header "x-ms-meta-binarystreamobjectid: guid" \
                 --header "x-ms-blob-type: BlockBlob" \
                 --header "Content-Type: application/zip" \
-                --data-binary "@$(Build.ArtifactStagingDirectory)/drop.zip"
+                --data-binary "@$(Build.ArtifactStagingDirectory)/my_artifact"
 
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
@@ -100,7 +100,7 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - script: |
-             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"$(Build.ArtifactStagingDirectory)/drop.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
+             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"drop.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
              deploymentResponse=$(curl -X POST \
               -H 'Content-Type: application/json' \
               -H 'x-rdp-version: 8.1' \
