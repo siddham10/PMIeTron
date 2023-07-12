@@ -72,26 +72,19 @@ stages:
       - job: Deploy_File_Job
         displayName: 'Deploy File'
         steps:
-          - task: DownloadBuildArtifacts@0
-            inputs:
-             buildType: 'current'
-             downloadType: 'single'
-             artifactName: 'drop'
-             downloadPath: '$(Build.ArtifactStagingDirectory)'
-
           - script: |
               curl -v -X PUT "$uploadURL" \
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
                 --header "x-ms-meta-x_rdp_tenantid: etronds" \
-                --header "x-ms-meta-originalfilename: $(ZIP_NODE)" \
-                --header "x-ms-blob-content-disposition: attachment; filename=$(ZIP_NODE)" \
+                --header "x-ms-meta-originalfilename: $(Build.ArtifactStagingDirectory)/drop.zip" \
+                --header "x-ms-blob-content-disposition: attachment; filename=$(Build.ArtifactStagingDirectory)/drop.zip" \
                 --header "x-ms-meta-type: disposition" \
                 --header "x-ms-meta-x_rdp_clientid: rdpclient" \
                 --header "x-ms-meta-x_rdp_userid: etronds.systemadmin@riversand.com" \
                 --header "x-ms-meta-binarystreamobjectid: guid" \
                 --header "x-ms-blob-type: BlockBlob" \
                 --header "Content-Type: application/zip" \
-                --data-binary "@$(Build.ArtifactStagingDirectory)/files.zip"
+                --data-binary "@$(Build.ArtifactStagingDirectory)/drop.zip"
 
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
@@ -105,7 +98,7 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - script: |
-             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"$(ZIP_NODE)","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
+             jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"$(Build.ArtifactStagingDirectory)/drop.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
              deploymentResponse=$(curl -X POST \
               -H 'Content-Type: application/json' \
               -H 'x-rdp-version: 8.1' \
