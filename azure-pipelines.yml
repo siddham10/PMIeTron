@@ -67,7 +67,7 @@ stages:
                 --header "x-ms-meta-binarystreamobjectid: guid" \
                 --header "x-ms-blob-type: BlockBlob" \
                 --header "Content-Type: application/zip" \
-                --data-binary "@$(Build.ArtifactStagingDirectory)/my_artifact.zip"
+                --data-binary "@$(Build.ArtifactStagingDirectory)/my_artifact/my_artifact.zip"
 
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
