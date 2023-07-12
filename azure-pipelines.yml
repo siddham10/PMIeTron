@@ -56,7 +56,7 @@ stages:
                 -H "auth-client-id: j29DTHa7m7VHucWbHg7VvYA75pUjBopS" \
                 -H "auth-client-secret: J7UaRWQgxorI8mdfuu8y0mOLqzlIJo2hM3O4VfhX1PIeoa7CYVX_l0-BnHRtuSWB" \
                 -d "$jsonBody" \
-                https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload))
+                'https://etronds.riversand.com/api/binarystreamobjectservice/prepareUpload'))
 
                 # Extract the uploadURL from the response using jq
               uploadURL=$(echo "$response" | jq -r '.response.binaryStreamObjects[0].data.properties.uploadURL')
