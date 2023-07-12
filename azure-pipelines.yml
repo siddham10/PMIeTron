@@ -4,7 +4,7 @@ trigger:
       - main  # Replace with your target branch name
 
 variables:
-  ZIP_NODE: 'rock-entity-header_product_thing_uiConfig.json'  # Replace with your desired file name
+  ZIP_NODE: '010-base-model-thing.xlsx'  # Replace with your desired file name
 
 stages:
   - stage: Publish_Zip_File
@@ -17,7 +17,7 @@ stages:
 
           - task: ArchiveFiles@2
             inputs:
-              rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/$(ZIP_NODE)'  # Replace with the path to your folder in the repository
+              rootFolderOrFile: '20-excel-based/210-models/$(ZIP_NODE)'  # Replace with the path to your folder in the repository
               includeRootFolder: true
               archiveType: 'zip'
               archiveFile: '$(Build.ArtifactStagingDirectory)/my_artifact.zip'
@@ -31,6 +31,14 @@ stages:
           
             displayName: 'Publish Zip File'
 
+  
+  - stage: Get_Upload_URL
+    displayName: 'Get Upload URL'
+    jobs:
+      - job: Get_Upload_URL_Job
+        displayName: 'Get Upload URL'
+        steps:
+          - checkout: self
 
           - script: |
               # Define the JSON request body
@@ -53,8 +61,18 @@ stages:
               
               echo "Upload URL: $uploadURL"
               
-            displayName: 'Make POST request and extract uploadURL'
+            displayName: 'Get Upload URL'
+
                  
+
+  - stage: Deploy_File
+    displayName: 'Deploy File'
+    jobs:
+      - job: Deploy_File_Job
+        displayName: 'Deploy File'
+        steps:
+          - checkout: self
+         
           - script: |
               curl -v -X PUT "$uploadURL" \
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
@@ -67,11 +85,19 @@ stages:
                 --header "x-ms-meta-binarystreamobjectid: guid" \
                 --header "x-ms-blob-type: BlockBlob" \
                 --header "Content-Type: application/zip" \
-                --data-binary "@$(Build.ArtifactStagingDirectory)/my_artifact/my_artifact.zip"
+                --data-binary "@$(Build.ArtifactStagingDirectory)/my_artifact.zip"
 
               echo "Folder deployed successfully."
             displayName: 'Deploy Folder'
 
+  - stage: Get_Task_Details_From_Tenant
+    displayName: 'Get Task Details From Tenant'
+    jobs:
+      - job: Get_Task_Details_From_Tenant_Job
+        displayName: 'Get Task Details From Tenant'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
           - script: |
              jsonobject='{"adminObject":{"id":"someguid","type":"adminObject","properties":{"flushConfig":false,"storageType":"stream","objectKey":"my_artifact.zip","tenantId":"etronds","retryCount":1,"sleepTime":1000}}}'
              deploymentResponse=$(curl -X POST \
@@ -86,10 +112,10 @@ stages:
               -d "$jsonobject" \
               'https://etronds.riversand.com/api/adminservice/deploytenantseed')
              echo "$deploymentResponse"
-             status=$(echo "$deploymentResponse" | jq -r '.deploymentResponse.binaryStreamObjects[0].data.properties.status')
-             taskId=$(echo "$deploymentResponse" | jq -r '.deploymentResponse.binaryStreamObjects[0].data.properties.taskId')
+             status=$(echo "$deploymentResponse" | jq -r '.deploymentResponse..status')
+             taskId=$(echo "$deploymentResponse" | jq -r '.deploymentResponse.statusDetail.taskId')
               
              echo "Status: $status"
              echo "Task ID: $taskId"
              
-            displayName: 'Deployment'
+            displayName: 'Get Task Details From Tenant'
