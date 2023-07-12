@@ -25,7 +25,7 @@ stages:
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: '$(Build.ArtifactStagingDirectory)'
-              artifactName: 'drop'  # Replace with your desired artifact name
+              artifactName: 'drop.zip'  # Replace with your desired artifact name
               publishLocation: 'pipeline'
 
           
@@ -44,7 +44,7 @@ stages:
 
           - script: |
               # Define the JSON request body
-              jsonBody='{"binaryStreamObject": {"id": "guid","type": "seedDataStream","properties": {"objectKey": "rock-entity-header_product_thing_uiConfig.json","originalFileName": "rock-entity-header_product_thing_uiConfig.json"}}}'
+              jsonBody='{"binaryStreamObject": {"id": "guid","type": "seedDataStream","properties": {"objectKey": "drop.zip","originalFileName": "drop.zip"}}}'
               # Make the POST request and store the response in a variable
               response=$(curl -X POST \
                 -H "Content-Type: application/json" \
@@ -72,12 +72,19 @@ stages:
       - job: Deploy_File_Job
         displayName: 'Deploy File'
         steps:
+          - checkout: self
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifactName: 'drop'  
+              downloadPath: '$(Build.ArtifactStagingDirectory)'
+            displayName: 'Download Zip File'
+
           - script: |
               curl -v -X PUT "$uploadURL" \
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
                 --header "x-ms-meta-x_rdp_tenantid: etronds" \
-                --header "x-ms-meta-originalfilename: $(Build.ArtifactStagingDirectory)/drop.zip" \
-                --header "x-ms-blob-content-disposition: attachment; filename=$(Build.ArtifactStagingDirectory)/drop.zip" \
+                --header "x-ms-meta-originalfilename: drop.zip" \
+                --header "x-ms-blob-content-disposition: attachment; filename=drop.zip" \
                 --header "x-ms-meta-type: disposition" \
                 --header "x-ms-meta-x_rdp_clientid: rdpclient" \
                 --header "x-ms-meta-x_rdp_userid: etronds.systemadmin@riversand.com" \
