@@ -60,8 +60,9 @@ stages:
 
                 # Extract the uploadURL from the response using jq
               uploadURL=$(echo "$response" | jq -r '.response.binaryStreamObjects[0].data.properties.uploadURL')
-
+              - def $uploadURL = $uploadURL.replaceAll('%', '%%')
               echo "Upload URL: $uploadURL"
+              
             displayName: 'Make POST request and extract uploadURL'
 
                  
