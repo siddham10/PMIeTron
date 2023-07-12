@@ -25,7 +25,7 @@ stages:
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: '$(Build.ArtifactStagingDirectory)'
-              artifactName: 'drop.zip'  # Replace with your desired artifact name
+                # Replace with your desired artifact name
               publishLocation: 'pipeline'
 
           
@@ -73,12 +73,7 @@ stages:
         displayName: 'Deploy File'
         steps:
           - checkout: self
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              artifactName: 'drop'  
-              downloadPath: '$(Build.ArtifactStagingDirectory)'
-            displayName: 'Download Zip File'
-
+         
           - script: |
               curl -v -X PUT "$uploadURL" \
                 --header "x-ms-meta-x_rdp_userroles: systemadmin" \
