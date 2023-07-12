@@ -4,7 +4,7 @@ trigger:
       - main  # Replace with your target branch name
 
 variables:
-  ZIP_NODE: '010-base-model-thing.xlsx'  # Replace with your desired file name
+  ZIP_NODE: 'rock-entity-header_product_thing_uiConfig.json'  # Replace with your desired file name
 
 stages:
   - stage: Publish_Zip_File
@@ -17,7 +17,7 @@ stages:
 
           - task: ArchiveFiles@2
             inputs:
-              rootFolderOrFile: '20-excel-based/210-models/$(ZIP_NODE)'  # Replace with the path to your folder in the repository
+              rootFolderOrFile: '10-json/110-uiconfig/1106-entitytype/$(ZIP_NODE)'  # Replace with the path to your folder in the repository
               includeRootFolder: true
               archiveType: 'zip'
               archiveFile: '$(Build.ArtifactStagingDirectory)/my_artifact.zip'
@@ -112,8 +112,8 @@ stages:
               -d "$jsonobject" \
               'https://etronds.riversand.com/api/adminservice/deploytenantseed')
              echo "$deploymentResponse"
-             status=$(echo "$deploymentResponse" | jq -r '.deploymentResponse..status')
-             taskId=$(echo "$deploymentResponse" | jq -r '.deploymentResponse.statusDetail.taskId')
+             status=$(echo "$deploymentResponse" | jq -r '.response.status')
+             taskId=$(echo "$deploymentResponse" | jq -r '.response.statusDetail.taskId')
               
              echo "Status: $status"
              echo "Task ID: $taskId"
